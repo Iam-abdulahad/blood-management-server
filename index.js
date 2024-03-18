@@ -11,8 +11,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri =
-  `mongodb+srv://${process.env.BD_USER}:${process.env.DB_PASS}@bloodcare-bd.gduqg86.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.DB_PASS}@bloodcare-bd.gduqg86.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -27,6 +26,34 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const database = client.db("userDB");
+    const userCollections = database.collection("users");
+    const donorCollection = client.db("userDB").collection("donors");
+
+
+    app.get("/donors",  async(req, res) =>{
+      const query = {};
+      const cursor = donorCollection.find(query);
+      const donors = await cursor.toArray();
+      res.send(donors);
+    })
+
+    app.post("/user", async (req, res) => {
+      const user = req.body;
+      console.log("new user added:", user);
+      const result = await userCollections.insertOne(user);
+    });
+
+    app.post("/donor", async ( req, res ) =>{
+      const donor = req.body;
+      console.log("added new Donor:", donor);
+      const result = await donorCollection.insertOne(donor);
+      res.send(result)
+    });
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -37,7 +64,7 @@ async function run() {
     // await client.close();
   }
 }
-run().catch(console.dir);
+run().catch(console.log);
 
 app.get("/", (req, res) => {
   res.send("server is running for blood management....!");
