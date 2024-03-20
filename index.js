@@ -8,15 +8,36 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 //Middleware
-const corsConfig = {
-  origin: true,
-  credentials: true,
+const corsOptions = {
+  origin: "https://bloodcare-bangladesh.web.app",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
 };
-app.use(cors(corsConfig));
-app.options("*", cors(corsConfig));
-
-
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://bloodcare-bangladesh.web.app"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://bloodcare-bangladesh.web.app"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.DB_PASS}@bloodcare-bd.gduqg86.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -73,6 +94,8 @@ run().catch(console.log);
 app.get("/", (req, res) => {
   res.send("server is running for blood management....!");
 });
+
+app.options("*", cors(corsOptions));
 
 app.listen(port, () => {
   console.log(`Curd server is running on port ${port}`);
