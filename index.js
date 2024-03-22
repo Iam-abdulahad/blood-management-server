@@ -9,7 +9,13 @@ const port = process.env.PORT || 5000;
 
 //Middleware
 
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    optionsSuccessStatus: 200,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.DB_PASS}@bloodcare-bd.gduqg86.mongodb.net/?retryWrites=true&w=majority`;
@@ -67,7 +73,6 @@ run().catch(console.log);
 app.get("/", (req, res) => {
   res.send("server is running for blood management....!");
 });
-
 
 app.listen(port, () => {
   console.log(`Curd server is running on port ${port}`);
